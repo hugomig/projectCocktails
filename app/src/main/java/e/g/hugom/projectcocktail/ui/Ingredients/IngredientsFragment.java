@@ -1,4 +1,4 @@
-package e.g.hugom.projectcocktail.ui.home;
+package e.g.hugom.projectcocktail.ui.Ingredients;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
