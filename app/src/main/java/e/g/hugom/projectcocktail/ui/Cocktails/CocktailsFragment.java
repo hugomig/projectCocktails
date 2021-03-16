@@ -2,17 +2,22 @@ package e.g.hugom.projectcocktail.ui.Cocktails;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,18 +36,31 @@ public class CocktailsFragment extends Fragment {
 
     private static final String urlCocktails = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f=";
 
+    private EditText inptSearchCocktail;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_cocktails, container, false);
 
         ListView lvCocktails = root.findViewById(R.id.lv_cocktails);
 
         RequestQueue queue = MySingleton.getInstance(lvCocktails.getContext()).getRequestQueue();
-        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(),queue);
+        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(),queue,root);
 
         AsyncLoadCocktails asyncLoadCocktails = new AsyncLoadCocktails(adapter);
         asyncLoadCocktails.execute(urlCocktails);
 
         lvCocktails.setAdapter(adapter);
+
+        inptSearchCocktail = root.findViewById(R.id.inpt_search_cocktail);
+        Button btnSearch = root.findViewById(R.id.btn_search_cocktail);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.clear();
+                AsyncLoadCocktails asyncLoadCocktailsSearch = new AsyncLoadCocktails(adapter);
+                asyncLoadCocktailsSearch.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s="+inptSearchCocktail.getText().toString());
+            }
+        });
 
         return root;
     }
@@ -53,15 +71,21 @@ class AdapterCocktails extends BaseAdapter {
     ArrayList<JSONObject> cocktails;
     LayoutInflater inflater;
     RequestQueue queue;
+    View root;
 
-    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue){
+    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root){
         cocktails = new ArrayList<JSONObject>();
         this.inflater = inflater;
         this.queue = queue;
+        this.root = root;
     }
 
     public void add(JSONObject cocktail){
         cocktails.add(cocktail);
+    }
+
+    public void clear(){
+        cocktails = new ArrayList<JSONObject>();
     }
 
     @Override
@@ -111,6 +135,16 @@ class AdapterCocktails extends BaseAdapter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("cocktail",cocktails.get(position).toString());
+                Navigation.findNavController(root).navigate(R.id.action_navigation_cocktails_to_navigation_show_cocktail_details,bundle);
+            }
+        });
+
         return convertView;
     }
 }

@@ -15,7 +15,17 @@
         android:id="@+id/navigation_cocktails"
         android:name="e.g.hugom.projectcocktail.ui.Cocktails.CocktailsFragment"
         android:label="@string/title_cocktails"
-        tools:layout="@layout/fragment_cocktails" />
+        tools:layout="@layout/fragment_cocktails" >
+        <action
+            android:id="@+id/action_navigation_cocktails_to_navigation_show_cocktail_details"
+            app:destination="@id/navigation_show_cocktail_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_show_cocktail_details"
+        android:name="e.g.hugom.projectcocktail.ui.Cocktails.ShowCocktailDetails"
+        android:label="@string/title_cocktails"
+        tools:layout="@layout/fragment_show_cocktail_details"/>
 
     <fragment
         android:id="@+id/navigation_friend"
