@@ -4,23 +4,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import e.g.hugom.projectcocktail.R;
 
-public class HomeFragment extends Fragment {
+public class IngredientsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+<<<<<<< HEAD
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
 
 
+=======
+        View root = inflater.inflate(R.layout.fragment_ingredients, container, false);
+>>>>>>> 38d5a2d05caa66560657e63c502b18151abaac36
         return root;
     }
 }
