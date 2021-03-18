@@ -52,23 +52,16 @@ public class AsyncLoadCocktails extends AsyncTask<String,Void, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject jsonObject) {
-        ArrayList<JSONObject> cocktails = new ArrayList<JSONObject>();
         try {
             for(char letter='a';letter<='z';letter++) {
                     if(!jsonObject.getJSONObject(""+letter).isNull("drinks")){
                         JSONArray array = jsonObject.getJSONObject(""+letter).getJSONArray("drinks");
                         for(int i=0; i<array.length();i++){
-                            cocktails.add(array.getJSONObject(i));
+                            adapter.add(array.getJSONObject(i));
+                            adapter.notifyDataSetChanged();
                         }
                     }
             }
-            Log.i("HUGO",cocktails.toString());
-            for(JSONObject cocktail : cocktails){
-                //Log.i("HUGO",cocktail.getString("strDrink"));
-                //Log.i("HUGO",cocktail.getString("strDrinkThumb"));
-                adapter.add(cocktail);
-            }
-            adapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }
