@@ -57,7 +57,7 @@ public class CocktailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 adapter.clear();
-                AsyncLoadCocktails asyncLoadCocktailsSearch = new AsyncLoadCocktails(adapter);
+                AsyncLoadCocktailsSearch asyncLoadCocktailsSearch = new AsyncLoadCocktailsSearch(adapter);
                 asyncLoadCocktailsSearch.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s="+inptSearchCocktail.getText().toString());
             }
         });
