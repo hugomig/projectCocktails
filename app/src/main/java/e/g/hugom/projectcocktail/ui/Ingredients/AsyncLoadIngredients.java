@@ -56,9 +56,9 @@ public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
                 JSONObject ingredient = ingredients.getJSONObject(i);
                 String ingredientName = ingredient.getString("strIngredient1");
                 adapter.add(ingredientName);
-                adapter.notifyDataSetChanged();
             }
-
+            adapter.sort();
+            adapter.notifyDataSetChanged();
         } catch(JSONException e){
             e.printStackTrace();
         }

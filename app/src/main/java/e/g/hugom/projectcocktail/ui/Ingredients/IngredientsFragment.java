@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import e.g.hugom.projectcocktail.MySingleton;
 import e.g.hugom.projectcocktail.R;
@@ -94,5 +95,9 @@ class AdapterIngredients extends BaseAdapter {
 
     public void add(String ingredientName){
         ingredientsNames.add(ingredientName);
+    }
+
+    public void sort(){
+        Collections.sort(ingredientsNames);
     }
 }
