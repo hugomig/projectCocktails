@@ -14,22 +14,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.IOException;
 
+
+
 public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
 
+
+    private AdapterIngredients adapter;
+
+    public AsyncLoadIngredients(AdapterIngredients adapter) {
+        this.adapter = adapter;
+    }
+
     @Override
-    protected JSONObject doInBackground(String... strings){
+    protected JSONObject doInBackground(String... strings) {
         URL url = null;
-        try{
+        try {
             url = new URL(strings[0]);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            try{
+            try {
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 String response = readStream(in);
                 JSONObject result = new JSONObject(response);
                 return result;
-            } catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
-            } finally {urlConnection.disconnect();}
+            } finally {
+                urlConnection.disconnect();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,28 +48,29 @@ public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
     }
 
     @Override
-    protected void onPostExecute(JSONObject jsonObject){
-        Log.i("antoine",jsonObject.toString());
+    protected void onPostExecute(JSONObject jsonObject) {
+        Log.i("antoine", jsonObject.toString());
         try {
             JSONArray ingredients = jsonObject.getJSONArray("drinks");
-            for(int i = 0; i < ingredients.length(); i++){
+            for (int i = 0; i < ingredients.length(); i++) {
                 JSONObject ingredient = ingredients.getJSONObject(i);
                 String ingredientName = ingredient.getString("strIngredient1");
-                Log.i("antoine", ingredientName);
-
+                adapter.add(ingredientName);
+                adapter.notifyDataSetChanged();
             }
-        } catch (JSONException e) {
+
+        } catch(JSONException e){
             e.printStackTrace();
         }
 
 
     }
 
-    private String readStream(InputStream is) {
+    private String readStream (InputStream is){
         try {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             int i = is.read();
-            while(i != -1) {
+            while (i != -1) {
                 bo.write(i);
                 i = is.read();
             }
@@ -67,7 +79,5 @@ public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
             return "";
         }
     }
-
-
-
 }
+
