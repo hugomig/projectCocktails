@@ -3,6 +3,7 @@ package e.g.hugom.projectcocktail.ui.Ingredients;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +26,7 @@ public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                 String response = readStream(in);
                 JSONObject result = new JSONObject(response);
+                return result;
             } catch (JSONException e){
                 e.printStackTrace();
             } finally {urlConnection.disconnect();}
@@ -37,6 +39,19 @@ public class AsyncLoadIngredients extends AsyncTask<String,Void,JSONObject> {
     @Override
     protected void onPostExecute(JSONObject jsonObject){
         Log.i("antoine",jsonObject.toString());
+        try {
+            JSONArray ingredients = jsonObject.getJSONArray("drinks");
+            for(int i = 0; i < ingredients.length(); i++){
+                JSONObject ingredient = ingredients.getJSONObject(i);
+                String ingredientName = ingredient.getString("strIngredient1");
+                Log.i("antoine", ingredientName);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private String readStream(InputStream is) {

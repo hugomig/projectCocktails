@@ -12,8 +12,12 @@ import e.g.hugom.projectcocktail.R;
 
 public class IngredientsFragment extends Fragment {
 
+    private static final String urlIngredients = "https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list";
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_ingredients, container, false);
+        AsyncLoadIngredients asyncLoadIngredients = new AsyncLoadIngredients();
+        asyncLoadIngredients.execute(urlIngredients);
 
 
 
