@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,8 @@ public class IngredientsFragment extends Fragment {
         AdapterIngredients adapter = new AdapterIngredients(getLayoutInflater());
         AsyncLoadIngredients asyncLoadIngredients = new AsyncLoadIngredients(adapter);
         asyncLoadIngredients.execute(urlIngredients);
-
+        ListView ingredientList = root.findViewById(R.id.ingredient_list);
+        ingredientList.setAdapter(adapter);
 
 
         return root;
