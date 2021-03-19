@@ -4,18 +4,24 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import e.g.hugom.projectcocktail.R;
+import e.g.hugom.projectcocktail.ui.Cocktails.AsyncBitmapDownloader;
 
 public class FriendFragment extends Fragment {
 
@@ -29,6 +35,29 @@ public class FriendFragment extends Fragment {
                 requestSmsPermission();
             }
         });
+
+        root.findViewById(R.id.btn_choose_cocktail).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(root).navigate(R.id.action_navigation_friend_to_navigation_choose_cocktail);
+            }
+        });
+
+        if(getArguments() != null){
+            if(getArguments().containsKey("cocktail")){
+                try {
+                    JSONObject cocktail = new JSONObject(getArguments().getString("cocktail"));
+                    ImageView cocktailPicture = root.findViewById(R.id.cocktail_picture);
+                    TextView cocktailName = root.findViewById(R.id.cocktail_name);
+                    AsyncBitmapDownloader asyncBitmapDownloader = new AsyncBitmapDownloader(root,cocktailPicture);
+                    asyncBitmapDownloader.execute(cocktail.getString("strDrinkThumb"));
+                    cocktailName.setText(cocktail.getString("strDrink"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return root;
     }
 
@@ -64,4 +93,5 @@ public class FriendFragment extends Fragment {
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage("+33679201212",null,"Salut !",null,null);
     }
+
 }

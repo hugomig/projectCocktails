@@ -1,9 +1,8 @@
-package e.g.hugom.projectcocktail.ui.Cocktails;
+package e.g.hugom.projectcocktail.ui.Friend;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -31,28 +31,30 @@ import java.util.ArrayList;
 
 import e.g.hugom.projectcocktail.MySingleton;
 import e.g.hugom.projectcocktail.R;
+import e.g.hugom.projectcocktail.ui.Cocktails.AdapterCocktails;
+import e.g.hugom.projectcocktail.ui.Cocktails.AsyncLoadCocktails;
+import e.g.hugom.projectcocktail.ui.Cocktails.AsyncLoadCocktailsSearch;
 
-public class CocktailsFragment extends Fragment {
+import static e.g.hugom.projectcocktail.ui.Cocktails.CocktailsFragment.urlCocktails;
 
-    public static final String urlCocktails = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f=";
+public class ChooseCocktail extends Fragment {
 
-    private EditText inptSearchCocktail;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_choose_cocktail, container, false);
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_cocktails, container, false);
+        ListView lvChoose = root.findViewById(R.id.lv_choose_cocktail);
 
-        ListView lvCocktails = root.findViewById(R.id.lv_cocktails);
-
-        RequestQueue queue = MySingleton.getInstance(lvCocktails.getContext()).getRequestQueue();
-        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(),queue,root,R.id.action_navigation_cocktails_to_navigation_show_cocktail_details);
+        RequestQueue queue = MySingleton.getInstance(lvChoose.getContext()).getRequestQueue();
+        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(), queue, root, R.id.action_navigation_choose_cocktail_to_navigation_friend);
 
         AsyncLoadCocktails asyncLoadCocktails = new AsyncLoadCocktails(adapter);
         asyncLoadCocktails.execute(urlCocktails);
 
-        lvCocktails.setAdapter(adapter);
+        lvChoose.setAdapter(adapter);
 
-        inptSearchCocktail = root.findViewById(R.id.inpt_search_cocktail);
-        Button btnSearch = root.findViewById(R.id.btn_search_cocktail);
+        EditText inptSearchCocktail = root.findViewById(R.id.inpt_search_choose_cocktail);
+        Button btnSearch = root.findViewById(R.id.btn_search_choose_cocktail);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,5 +66,6 @@ public class CocktailsFragment extends Fragment {
 
         return root;
     }
-}
 
+
+}

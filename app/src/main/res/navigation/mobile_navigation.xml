@@ -31,5 +31,21 @@
         android:id="@+id/navigation_friend"
         android:name="e.g.hugom.projectcocktail.ui.Friend.FriendFragment"
         android:label="@string/title_friend"
-        tools:layout="@layout/fragment_friend" />
+        tools:layout="@layout/fragment_friend" >
+        <action
+            android:id="@+id/action_navigation_friend_to_navigation_choose_cocktail"
+            app:destination="@id/navigation_choose_cocktail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_choose_cocktail"
+        android:name="e.g.hugom.projectcocktail.ui.Friend.ChooseCocktail"
+        android:label="@string/title_friend"
+        tools:layout="@layout/fragment_choose_cocktail">
+        <action
+            android:id="@+id/action_navigation_choose_cocktail_to_navigation_friend"
+            app:destination="@id/navigation_friend"
+            app:popUpTo="@+id/navigation_friend"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
