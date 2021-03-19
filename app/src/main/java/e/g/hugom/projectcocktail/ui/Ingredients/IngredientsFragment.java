@@ -100,4 +100,6 @@ class AdapterIngredients extends BaseAdapter {
     public void sort(){
         Collections.sort(ingredientsNames);
     }
+
+
 }
