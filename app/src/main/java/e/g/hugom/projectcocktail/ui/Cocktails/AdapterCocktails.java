@@ -31,6 +31,7 @@ public class AdapterCocktails extends BaseAdapter {
     RequestQueue queue;
     View root;
     int idNav;
+    boolean onClickListening;
 
     public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav){
         cocktails = new ArrayList<JSONObject>();
@@ -38,6 +39,16 @@ public class AdapterCocktails extends BaseAdapter {
         this.queue = queue;
         this.root = root;
         this.idNav = idNav;
+        onClickListening = true;
+    }
+
+    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav, boolean onClickListening){
+        cocktails = new ArrayList<JSONObject>();
+        this.inflater = inflater;
+        this.queue = queue;
+        this.root = root;
+        this.idNav = idNav;
+        this.onClickListening = onClickListening;
     }
 
     public void add(JSONObject cocktail){
@@ -96,14 +107,16 @@ public class AdapterCocktails extends BaseAdapter {
             e.printStackTrace();
         }
 
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("cocktail",cocktails.get(position).toString());
-                Navigation.findNavController(root).navigate(idNav,bundle);
-            }
-        });
+        if(onClickListening) {
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("cocktail", cocktails.get(position).toString());
+                    Navigation.findNavController(root).navigate(idNav, bundle);
+                }
+            });
+        }
 
         return convertView;
     }

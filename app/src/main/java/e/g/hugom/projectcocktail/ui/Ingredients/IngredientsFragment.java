@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,13 +32,13 @@ public class IngredientsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_ingredients, container, false);
+
         ListView ingredientList = root.findViewById(R.id.ingredient_list);
         RequestQueue queue = MySingleton.getInstance(ingredientList.getContext()).getRequestQueue();
-        AdapterIngredients adapter = new AdapterIngredients(getLayoutInflater(), queue);
+        AdapterIngredients adapter = new AdapterIngredients(getLayoutInflater(), queue, root);
         AsyncLoadIngredients asyncLoadIngredients = new AsyncLoadIngredients(adapter);
         asyncLoadIngredients.execute(urlIngredients);
         ingredientList.setAdapter(adapter);
-
 
         return root;
     }
@@ -48,11 +49,13 @@ class AdapterIngredients extends BaseAdapter {
     private ArrayList<String> ingredientsNames;
     private LayoutInflater inflater;
     private RequestQueue queue;
+    private View root;
 
-    public AdapterIngredients(LayoutInflater inflater, RequestQueue queue){
+    public AdapterIngredients(LayoutInflater inflater, RequestQueue queue, View root){
         this.inflater = inflater;
         ingredientsNames = new ArrayList<>();
         this.queue = queue;
+        this.root = root;
     }
 
 
@@ -89,6 +92,15 @@ class AdapterIngredients extends BaseAdapter {
             }
         });
         queue.add(imageRequest);
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("ingredient",ingredientsNames.get(position));
+                Navigation.findNavController(root).navigate(R.id.action_navigation_ingredients_to_navigation_show_ingredient_details,bundle);
+            }
+        });
         
         return convertView;
     }
