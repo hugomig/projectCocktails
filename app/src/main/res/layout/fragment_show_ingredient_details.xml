@@ -16,17 +16,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_ingredient_name"
+    <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="Name of the ingredient"
-        android:textSize="30sp"
+        android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_ingredient" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_ingredient">
+
+        <TextView
+            android:id="@+id/tv_ingredient_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name of the ingredient"
+            android:textSize="30sp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:textAlignment="center"/>
+
+        <Button
+            android:id="@+id/btn_fav_ingredient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add to favorite" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/lv_cocktails_from_ingredient"
@@ -38,6 +57,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_ingredient_name" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

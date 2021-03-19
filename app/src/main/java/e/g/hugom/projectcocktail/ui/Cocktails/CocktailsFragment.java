@@ -1,5 +1,6 @@
 package e.g.hugom.projectcocktail.ui.Cocktails;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,6 +28,11 @@ import com.android.volley.toolbox.ImageRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import e.g.hugom.projectcocktail.MySingleton;
@@ -36,6 +42,8 @@ public class CocktailsFragment extends Fragment {
 
     public static final String urlCocktails = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f=";
 
+    public static final String urlFichierLikeCocktail = "cocktailsLikes.txt";
+
     private EditText inptSearchCocktail;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,7 +52,8 @@ public class CocktailsFragment extends Fragment {
         ListView lvCocktails = root.findViewById(R.id.lv_cocktails);
 
         RequestQueue queue = MySingleton.getInstance(lvCocktails.getContext()).getRequestQueue();
-        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(),queue,root,R.id.action_navigation_cocktails_to_navigation_show_cocktail_details);
+        ArrayList<String> cocktailsLiked = readCocktailsLikes(getActivity());
+        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(),queue,root,R.id.action_navigation_cocktails_to_navigation_show_cocktail_details,cocktailsLiked);
 
         AsyncLoadCocktails asyncLoadCocktails = new AsyncLoadCocktails(adapter);
         asyncLoadCocktails.execute(urlCocktails);
@@ -63,6 +72,25 @@ public class CocktailsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public static ArrayList<String> readCocktailsLikes(Activity activity){
+        ArrayList<String> cocktailsLiked = new ArrayList<String>();
+        try {
+            FileInputStream fis = activity.openFileInput(urlFichierLikeCocktail);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while((line = br.readLine()) != null){
+                Log.i("HUGO",line);
+                cocktailsLiked.add(line);
+            }
+            fis.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cocktailsLiked;
     }
 }
 

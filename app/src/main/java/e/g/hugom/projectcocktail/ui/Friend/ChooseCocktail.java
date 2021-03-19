@@ -34,6 +34,7 @@ import e.g.hugom.projectcocktail.R;
 import e.g.hugom.projectcocktail.ui.Cocktails.AdapterCocktails;
 import e.g.hugom.projectcocktail.ui.Cocktails.AsyncLoadCocktails;
 import e.g.hugom.projectcocktail.ui.Cocktails.AsyncLoadCocktailsSearch;
+import e.g.hugom.projectcocktail.ui.Cocktails.CocktailsFragment;
 
 import static e.g.hugom.projectcocktail.ui.Cocktails.CocktailsFragment.urlCocktails;
 
@@ -46,7 +47,8 @@ public class ChooseCocktail extends Fragment {
         ListView lvChoose = root.findViewById(R.id.lv_choose_cocktail);
 
         RequestQueue queue = MySingleton.getInstance(lvChoose.getContext()).getRequestQueue();
-        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(), queue, root, R.id.action_navigation_choose_cocktail_to_navigation_friend);
+        ArrayList<String> cocktailsLiked = CocktailsFragment.readCocktailsLikes(getActivity());
+        AdapterCocktails adapter = new AdapterCocktails(getLayoutInflater(), queue, root, R.id.action_navigation_choose_cocktail_to_navigation_friend,cocktailsLiked);
 
         AsyncLoadCocktails asyncLoadCocktails = new AsyncLoadCocktails(adapter);
         asyncLoadCocktails.execute(urlCocktails);

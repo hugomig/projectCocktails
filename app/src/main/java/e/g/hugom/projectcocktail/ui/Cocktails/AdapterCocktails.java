@@ -1,6 +1,7 @@
 package e.g.hugom.projectcocktail.ui.Cocktails;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,23 +33,26 @@ public class AdapterCocktails extends BaseAdapter {
     View root;
     int idNav;
     boolean onClickListening;
+    ArrayList<String> cocktailsLiked;
 
-    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav){
+    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav, ArrayList<String> cocktailsLiked){
         cocktails = new ArrayList<JSONObject>();
         this.inflater = inflater;
         this.queue = queue;
         this.root = root;
         this.idNav = idNav;
         onClickListening = true;
+        this.cocktailsLiked = cocktailsLiked;
     }
 
-    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav, boolean onClickListening){
+    public AdapterCocktails(LayoutInflater inflater, RequestQueue queue, View root, int idNav, boolean onClickListening, ArrayList<String> cocktailsLiked){
         cocktails = new ArrayList<JSONObject>();
         this.inflater = inflater;
         this.queue = queue;
         this.root = root;
         this.idNav = idNav;
         this.onClickListening = onClickListening;
+        this.cocktailsLiked = cocktailsLiked;
     }
 
     public void add(JSONObject cocktail){
@@ -84,8 +88,10 @@ public class AdapterCocktails extends BaseAdapter {
         convertView = inflater.inflate(R.layout.cocktail_row_layout,parent,false);
         ImageView cocktailPicture = convertView.findViewById(R.id.cocktail_picture);
         TextView cocktailName = convertView.findViewById(R.id.cocktail_name);
+        String cocktailNameStr = "";
         try {
-            cocktailName.setText(cocktails.get(position).getString("strDrink"));
+            cocktailNameStr = cocktails.get(position).getString("strDrink");
+            cocktailName.setText(cocktailNameStr);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -116,6 +122,11 @@ public class AdapterCocktails extends BaseAdapter {
                     Navigation.findNavController(root).navigate(idNav, bundle);
                 }
             });
+        }
+
+        if(cocktailsLiked.contains(cocktailNameStr)) {
+            ImageView ivLikeCocktail = convertView.findViewById(R.id.iv_like_cocktail);
+            ivLikeCocktail.setImageBitmap(BitmapFactory.decodeResource(root.getResources(), R.drawable.heart));
         }
 
         return convertView;

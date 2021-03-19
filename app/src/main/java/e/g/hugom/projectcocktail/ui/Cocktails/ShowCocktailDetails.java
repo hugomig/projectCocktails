@@ -1,5 +1,7 @@
 package e.g.hugom.projectcocktail.ui.Cocktails;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,15 +26,24 @@ import com.android.volley.toolbox.ImageRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import e.g.hugom.projectcocktail.MySingleton;
 import e.g.hugom.projectcocktail.R;
+import e.g.hugom.projectcocktail.ui.Ingredients.IngredientsFragment;
 
 public class ShowCocktailDetails extends Fragment {
 
     ArrayList<String> ingredients;
     ArrayList<String> measure;
+
+    private Button btnFav;
+    private boolean isFav;
+
+    private String cocktailName;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -42,7 +54,8 @@ public class ShowCocktailDetails extends Fragment {
             Log.i("HUGO",cocktail.toString());
 
             TextView tvCocktailName = root.findViewById(R.id.tv_cocktail_name);
-            tvCocktailName.setText(cocktail.getString("strDrink"));
+            cocktailName = cocktail.getString("strDrink");
+            tvCocktailName.setText(cocktailName);
 
             AsyncBitmapDownloader asyncBitmapDownloader = new AsyncBitmapDownloader(root,root.findViewById(R.id.iv_cocktail));
             asyncBitmapDownloader.execute(cocktail.getString("strDrinkThumb"));
@@ -68,7 +81,63 @@ public class ShowCocktailDetails extends Fragment {
             e.printStackTrace();
         }
 
+        isFav = CocktailsFragment.readCocktailsLikes(getActivity()).contains(cocktailName);
+
+        btnFav = root.findViewById(R.id.btn_like_cocktail);
+        btnFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isFav) {
+                    removeLike(cocktailName, getActivity());
+                }
+                else{
+                    addLike(cocktailName,getActivity());
+                }
+            }
+        });
+
+        if(isFav){
+            btnFav.setText("Remove from favorite");
+        }
+
         return root;
+    }
+
+    public void addLike(String cocktailName, Activity activity){
+        ArrayList<String> liked = CocktailsFragment.readCocktailsLikes(activity);
+        try {
+            FileOutputStream fos = activity.openFileOutput(CocktailsFragment.urlFichierLikeCocktail, Context.MODE_PRIVATE);
+            for(String cocktail : liked){
+                fos.write((cocktail+"\n").getBytes());
+            }
+            fos.write((cocktailName+"\n").getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        isFav = true;
+        btnFav.setText("Remove from favorite");
+    }
+
+    public void removeLike(String cocktailName, Activity activity){
+        ArrayList<String> liked = CocktailsFragment.readCocktailsLikes(activity);
+        try {
+            FileOutputStream fos = activity.openFileOutput(CocktailsFragment.urlFichierLikeCocktail, Context.MODE_PRIVATE);
+            for(String cocktail : liked){
+                if(!cocktail.equals(cocktailName)) {
+                    fos.write((cocktail+"\n").getBytes());
+                }
+            }
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        isFav = false;
+        btnFav.setText("Add to favorite");
     }
 
 }
