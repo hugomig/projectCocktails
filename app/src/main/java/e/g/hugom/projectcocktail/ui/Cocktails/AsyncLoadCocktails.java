@@ -1,7 +1,6 @@
 package e.g.hugom.projectcocktail.ui.Cocktails;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,9 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class AsyncLoadCocktails extends AsyncTask<String,Void, JSONObject> {
 
