@@ -194,6 +194,7 @@ public class FriendFragment extends Fragment {
                 else {
                     Toast.makeText(getContext(),"You need to allow to read contacts to send a message to your firend",Toast.LENGTH_LONG).show();
                 }
+                break;
             }
             case PERMISSION_LOCATION: {
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
@@ -203,54 +204,58 @@ public class FriendFragment extends Fragment {
                     swGeoloc.setChecked(false);
                     Toast.makeText(getContext(),"The location will not be sended to your friend",Toast.LENGTH_LONG).show();
                 }
+                break;
             }
         }
     }
 
     public void sendSms(){
-        ArrayList<String> ingredientsOwned = new ArrayList<String>();
-        ArrayList<String> ingredientsDont = new ArrayList<String>();
+        if(!phoneNumber.equals("")) {
+            ArrayList<String> ingredientsOwned = new ArrayList<String>();
+            ArrayList<String> ingredientsDont = new ArrayList<String>();
 
-        for(int i=0;i<adapter.getCount();i++){
-            if(adapter.isChecked(i)){
-                ingredientsOwned.add((String)adapter.getItem(i));
+            for (int i = 0; i < adapter.getCount(); i++) {
+                if (adapter.isChecked(i)) {
+                    ingredientsOwned.add((String) adapter.getItem(i));
+                } else {
+                    ingredientsDont.add((String) adapter.getItem(i));
+                }
             }
-            else{
-                ingredientsDont.add((String)adapter.getItem(i));
-            }
-        }
 
-        SmsManager smsManager = SmsManager.getDefault();
-        String message = "Hello !\nLets drink a cocktail together !\nI propose you to drink a "+cocktailNameStr;
-        String message2 = "";
-        if(ingredientsOwned.size()>0){
-            message2 += "I have :";
-            for(String ingredient : ingredientsOwned){
-                message2 += "\n - "+ingredient;
+            SmsManager smsManager = SmsManager.getDefault();
+            String message = "Hello !\nLets drink a cocktail together !\nI propose you to drink a " + cocktailNameStr;
+            String message2 = "";
+            if (ingredientsOwned.size() > 0) {
+                message2 += "I have :";
+                for (String ingredient : ingredientsOwned) {
+                    message2 += "\n - " + ingredient;
+                }
             }
-        }
-        if(ingredientsDont.size()>0){
-            message2 += "\nCan you bring :";
-            for(String ingredient : ingredientsDont){
-               message2 += "\n - "+ingredient;
+            if (ingredientsDont.size() > 0) {
+                message2 += "\nCan you bring :";
+                for (String ingredient : ingredientsDont) {
+                    message2 += "\n - " + ingredient;
+                }
             }
-        }
-        if(message.length() + message2.length() > 159){
-            smsManager.sendTextMessage(phoneNumber,null,message,null,null);
-            smsManager.sendTextMessage(phoneNumber,null,message2,null,null);
-        }
-        else{
-            message += "\n" + message2;
-            smsManager.sendTextMessage(phoneNumber,null,message,null,null);
-        }
-        if(swGeoloc.isChecked()){
-            String message3 = "You can meet me there";
-            message3 += "\nhttps://www.google.fr/maps/search/"+myLocation.getLatitude()+","+myLocation.getLongitude()+
-                    "/@"+myLocation.getLatitude()+","+myLocation.getLongitude()+",17z";
-            smsManager.sendTextMessage(phoneNumber,null,message3,null,null);
-        }
+            if (message.length() + message2.length() > 159) {
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+                smsManager.sendTextMessage(phoneNumber, null, message2, null, null);
+            } else {
+                message += "\n" + message2;
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            }
+            if (swGeoloc.isChecked()) {
+                String message3 = "You can meet me there";
+                message3 += "\nhttps://www.google.fr/maps/search/" + myLocation.getLatitude() + "," + myLocation.getLongitude() +
+                        "/@" + myLocation.getLatitude() + "," + myLocation.getLongitude() + ",17z";
+                smsManager.sendTextMessage(phoneNumber, null, message3, null, null);
+            }
 
-        Toast.makeText(getContext(),"Message sended to "+contactName,Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Message sended to " + contactName, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(getContext(),"You need to choose a contact with a valid phone number to send a message",Toast.LENGTH_LONG).show();
+        }
     }
 
     private void saveLocation(){
