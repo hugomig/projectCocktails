@@ -2,16 +2,20 @@ package e.g.hugom.projectcocktail.ui.Friend;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +57,7 @@ public class FriendFragment extends Fragment {
 
     private static final int PERMISSION_SEND_SMS = 123;
     private static final int PERMISSION_READ_CONTACT = 124;
+    private static final int PERMISSION_LOCATION = 125;
     private static final int PICK_CONTACT = 1;
 
     private AdapterChooseIngredients adapter;
@@ -59,8 +65,10 @@ public class FriendFragment extends Fragment {
 
     private String phoneNumber = "";
     private String contactName;
+    private Location myLocation;
 
     private View root;
+    private Switch swGeoloc;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_friend, container, false);
@@ -86,6 +94,18 @@ public class FriendFragment extends Fragment {
         Button btnChooseContact = root.findViewById(R.id.btn_choose_contact);
         btnChooseContact.setVisibility(View.INVISIBLE);
 
+        swGeoloc = root.findViewById(R.id.sw_geoloc);
+        swGeoloc.setChecked(false);
+        swGeoloc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(swGeoloc.isChecked()){
+                    requestGeolocationPermission();
+                }
+            }
+        });
+        swGeoloc.setVisibility(View.INVISIBLE);
+
         if(getArguments() != null){
             if(getArguments().containsKey("cocktail")){
                 try {
@@ -104,6 +124,7 @@ public class FriendFragment extends Fragment {
 
                     tvChooseIngredient.setVisibility(View.VISIBLE);
                     btnChooseContact.setVisibility(View.VISIBLE);
+                    swGeoloc.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -140,6 +161,17 @@ public class FriendFragment extends Fragment {
         }
     }
 
+    private void requestGeolocationPermission(){
+        if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_NETWORK_STATE}, PERMISSION_LOCATION);
+        }
+        else {
+            saveLocation();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -163,6 +195,15 @@ public class FriendFragment extends Fragment {
                     Toast.makeText(getContext(),"You need to allow to read contacts to send a message to your firend",Toast.LENGTH_LONG).show();
                 }
             }
+            case PERMISSION_LOCATION: {
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    saveLocation();
+                }
+                else {
+                    swGeoloc.setChecked(false);
+                    Toast.makeText(getContext(),"The location will not be sended to your friend",Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
@@ -183,7 +224,7 @@ public class FriendFragment extends Fragment {
         String message = "Hello !\nLets drink a cocktail together !\nI propose you to drink a "+cocktailNameStr;
         String message2 = "";
         if(ingredientsOwned.size()>0){
-            message2 += "\nI have :";
+            message2 += "I have :";
             for(String ingredient : ingredientsOwned){
                 message2 += "\n - "+ingredient;
             }
@@ -194,16 +235,38 @@ public class FriendFragment extends Fragment {
                message2 += "\n - "+ingredient;
             }
         }
-        if(message.length() + message2.length() >159){
+        if(message.length() + message2.length() > 159){
             smsManager.sendTextMessage(phoneNumber,null,message,null,null);
             smsManager.sendTextMessage(phoneNumber,null,message2,null,null);
         }
         else{
-            message += message2;
+            message += "\n" + message2;
             smsManager.sendTextMessage(phoneNumber,null,message,null,null);
+        }
+        if(swGeoloc.isChecked()){
+            String message3 = "You can meet me there";
+            message3 += "\nhttps://www.google.fr/maps/search/"+myLocation.getLatitude()+","+myLocation.getLongitude()+
+                    "/@"+myLocation.getLatitude()+","+myLocation.getLongitude()+",17z";
+            smsManager.sendTextMessage(phoneNumber,null,message3,null,null);
         }
 
         Toast.makeText(getContext(),"Message sended to "+contactName,Toast.LENGTH_LONG).show();
+    }
+
+    private void saveLocation(){
+        if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(location == null){
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+            if(location == null){
+                Toast.makeText(getContext(),"Sorry we cannot know where you are check if your location is activated",Toast.LENGTH_LONG).show();
+                swGeoloc.setChecked(false);
+                return;
+            }
+            myLocation = location;
+        }
     }
 
     @Override
